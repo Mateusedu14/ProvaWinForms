@@ -1,45 +1,68 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using System;
-
 
 namespace ProvaWinForms
-{ 
-public static class Database
 {
-    //Implemente o método SalvarUsuario
-    public static bool SalvarUsuario(Usuario usuario)
+    public static class Database
     {
-
-
-        string connectionString = "Server=localhost;Port=3306;User Id=root" +
-                "; database=ti_113_windowsforms;";
-
+        
+        public static bool TelefoneExiste(string telefone)
+        {
+            string connectionString = "Server=localhost;Port=3306;User Id=root; database=ti_113_windowsforms;";
             MySqlConnection conexao = new MySqlConnection(connectionString);
-            conexao.Open();
 
+            try
+            {
+                conexao.Open();
+                string query = "SELECT COUNT(*) FROM usuario WHERE Telefone = @Telefone";
+                MySqlCommand cmd = new MySqlCommand(query, conexao);
+                cmd.Parameters.AddWithValue("@Telefone", telefone);
 
-            string query = "insert into usuario (Nome, Telefone)" +
-            "values (@Nome, @Telefone)";
-        MySqlCommand cmd = conexao.CreateCommand();
-        cmd.CommandText = query;
-        cmd.Parameters.AddWithValue("@Nome", usuario.Nome);
-        cmd.Parameters.AddWithValue("@Telefone", usuario.Telefone);
-        int quantidade = cmd.ExecuteNonQuery()
-        conexao.Close();
-        if (quantidade == 0)
-            return false;
-        else
-            return true;
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
 
+                return count > 0; 
+            }
+            catch (Exception ex)
+            {
+               
+                Console.WriteLine(ex.Message);
+                return false; 
+            }
+            finally
+            {
+                conexao.Close();
+            }
+        }
 
+       
+        public static bool SalvarUsuario(Usuario usuario)
+        {
+            string connectionString = "Server=localhost;Port=3306;User Id=root; database=ti_113_windowsforms;";
+            MySqlConnection conexao = new MySqlConnection(connectionString);
+
+            try
+            {
+                conexao.Open();
+                string query = "INSERT INTO usuario (Nome, Telefone) VALUES (@Nome, @Telefone)";
+                MySqlCommand cmd = new MySqlCommand(query, conexao);
+                cmd.Parameters.AddWithValue("@Nome", usuario.Nome);
+                cmd.Parameters.AddWithValue("@Telefone", usuario.Telefone);
+
+                int quantidade = cmd.ExecuteNonQuery();
+                return quantidade > 0; 
+            }
+            catch (Exception ex)
+            {
+                // Tratar qualquer erro de conexão
+                Console.WriteLine(ex.Message);
+                return false; 
+            }
+            finally
+            {
+                conexao.Close();
+            }
+        }
     }
-
 }
 
-}
 

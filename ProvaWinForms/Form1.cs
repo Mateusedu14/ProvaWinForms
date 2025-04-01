@@ -9,17 +9,32 @@ namespace ProvaWinForms
 
         private void btnSalvar_Click(object sender, EventArgs e)
         {
+            string telefone = txtTelefone.Text;
 
-            // Cria um novo usuário com os dados do formulário
+
+            if (Database.TelefoneExiste(telefone))
+            {
+                MessageBox.Show("Este telefone já está cadastrado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+
             Usuario novoUsuario = new Usuario()
             {
                 Nome = txtNome.Text,
-                Telefone = txtTelefone.Text
-
+                Telefone = telefone
             };
 
             bool sucesso = Database.SalvarUsuario(novoUsuario);
 
+            if (sucesso)
+            {
+                MessageBox.Show("Usuário salvo com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Erro ao salvar o usuário.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private static Usuario novoUsuario;
@@ -30,4 +45,5 @@ namespace ProvaWinForms
         }
     }
 }
+
 
